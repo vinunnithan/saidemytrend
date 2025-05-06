@@ -43,6 +43,22 @@ pipeline {                                    // 1  // Defines the start of the 
                                               // Runs the SonarQube scanner tool
                 }                             // Ends the withSonarQubeEnv block
             }                                 // 10  // Ends the steps block for 'SonarQube analysis' stage
-        }                                     // 8  // Ends the 'SonarQube analysis' stage
-    }
-}
+        }
+         stage("Quality gate") {
+             steps {
+                   script {
+                         timeout(time: 1, unit:  'HOURS') {
+
+                          def qg = waitForQualityGate()
+                
+                          if (qg.status ≠ 'OK' ) {
+                      
+                           error "Pipeline aborted due to quality gate failure: ${qg.status}"
+
+                   }
+               }
+           }
+        }
+     }
+  }
+}                            
